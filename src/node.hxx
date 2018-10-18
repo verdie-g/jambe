@@ -24,7 +24,7 @@ void Node<T>::add_route(Route& route, Method method, const T& data)
   {
     if (wildcard_node_ != nullptr && wildcard_node_->label_ != part)
     {
-      throw AlreadyRegisteredException(); // FIXME: throw conflict
+      throw WildcardConflictException();
     }
 
     if (wildcard_node_ == nullptr)

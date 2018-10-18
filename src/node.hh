@@ -3,6 +3,7 @@
 #include "already_registered.hh"
 #include "method.hh"
 #include "route.hh"
+#include "wildcard_conflict.hh"
 
 #include <array>
 #include <memory>
