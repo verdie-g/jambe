@@ -30,6 +30,8 @@ private:
   std::array<std::optional<T>, JAMBE_METHOD_NB> data_;
 
   void set_data(Method method, const T& data);
+  typename std::vector<Node<T>>::iterator find_child(const std::string_view& part);
+  std::unique_ptr<Node<T>>& create_wildcard(const std::string_view& part);
 };
 
 }
