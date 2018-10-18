@@ -17,5 +17,14 @@ void Router<T>::add_route(const std::string& route, Method method, const T& data
   root_.add_route(r, method, data);
 }
 
+template <typename T>
+Lookup<T> Router<T>::lookup(const std::string& route, Method method) const
+{
+  Lookup<T> l;
+  Route r(route);
+  root_.lookup(r, method, l);
+  return l;
+}
+
 // int Router::remove_route(const std::string& route, Method method);
-// int Router::lookup(const std::string& route, Method method, jambe_lookup *res) const;
+// optimize footprint
