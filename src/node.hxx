@@ -15,6 +15,7 @@ void Node<T>::add_route(Route& route, Method method, const T& data)
 {
   if (route.is_end())
   {
+    set_data(method, data);
     return;
   }
 
@@ -32,7 +33,7 @@ void Node<T>::add_route(Route& route, Method method, const T& data)
       wildcard_node_ = std::make_unique<Node<T>>(part);
     }
 
-    wildcard_node_->set_data_or_continue(route, method, data);
+    wildcard_node_->add_route(route, method, data);
     return;
   }
 
@@ -46,20 +47,7 @@ void Node<T>::add_route(Route& route, Method method, const T& data)
     child = children_.emplace(child, part);
   }
 
-  child->set_data_or_continue(route, method, data);
-}
-
-template <typename T>
-void Node<T>::set_data_or_continue(Route& route, Method method, const T& data)
-{
-  if (route.is_end())
-  {
-    set_data(method, data);
-  }
-  else
-  {
-    add_route(route, method, data);
-  }
+  child->add_route(route, method, data);
 }
 
 template <typename T>

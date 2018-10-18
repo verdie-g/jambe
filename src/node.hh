@@ -30,7 +30,6 @@ private:
   std::array<std::optional<T>, JAMBE_METHOD_NB> data_;
 
   void set_data(Method method, const T& data);
-  void set_data_or_continue(Route& route, Method method, const T& data);
 };
 
 }
