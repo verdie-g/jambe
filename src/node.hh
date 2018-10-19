@@ -36,7 +36,7 @@ private:
   typename std::vector<Node<T>>::const_iterator cfind_child(const std::string_view& part) const;
   typename std::vector<Node<T>>::iterator find_child(const std::string_view& part);
   std::unique_ptr<Node<T>>& create_wildcard(const std::string_view& part);
-  bool lookup_wildcard(Route& route, Method method, Lookup<T>& l, const std::string_view& part) const;
+  bool lookup_wildcard(Route& route, Method method, Lookup<T>& l) const;
 };
 
 }

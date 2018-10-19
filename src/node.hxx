@@ -47,6 +47,7 @@ bool Node<T>::lookup(Route& route, Method method, Lookup<T>& l) const
     return true;
   }
 
+  Route route_save = route;
   std::string_view part = route.next_part();
   auto child = cfind_child(part);
 
@@ -54,7 +55,7 @@ bool Node<T>::lookup(Route& route, Method method, Lookup<T>& l) const
       || child->label_ != part
       || !child->lookup(route, method, l))
   {
-    return lookup_wildcard(route, method, l, part);
+    return lookup_wildcard(route_save, method, l);
   }
 
   return true;
@@ -123,12 +124,15 @@ std::unique_ptr<Node<T>>& Node<T>::create_wildcard(const std::string_view& part)
 }
 
 template <typename T>
-bool Node<T>::lookup_wildcard(Route& route, Method method, Lookup<T>& l, const std::string_view& part) const
+bool Node<T>::lookup_wildcard(Route& route, Method method, Lookup<T>& l) const
 {
+  std::string_view part = route.next_part();
   LookupError save_err = l.error;
+
   if (wildcard_node_ != nullptr && wildcard_node_->lookup(route, method, l))
   {
     l.params.emplace_back(wildcard_node_->label_, part);
+    l.error = LookupError::NONE;
     return true;
   }
 
