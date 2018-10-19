@@ -18,7 +18,7 @@ void Route::throw_if_malformed(const std::string& route)
 
   for (size_t i = 1; i < route.length(); ++i)
   {
-    if (route[i] == ':' && (route[i - 1] != '/' || i == route.length() - 1))
+    if (route[i] == ':' && (route[i - 1] != '/' || i == route.length() - 1 || route[i + 1] == '/'))
     {
       throw std::invalid_argument("unexpected ':' character");
     }
