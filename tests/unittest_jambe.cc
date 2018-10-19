@@ -167,6 +167,26 @@ TEST(param, backtracking1)
   check_lookup_params(l, { { "id", "me"} });
 }
 
+TEST(param, backtracking2)
+{
+  Router<int> r;
+  r.add_route("/:id/lol", Method::GET, n[0]);
+  r.add_route("/lol/:id", Method::GET, n[1]);
+  auto l = r.lookup("lol/lol", Method::GET);
+  check_lookup_success(l, n[1], 1);
+  check_lookup_params(l, { { "id", "lol"} });
+}
+
+TEST(param, backtracking3)
+{
+  Router<int> r;
+  r.add_route("/:bb/bras/jambe", Method::GET, n[0]);
+  r.add_route("/lol/:aaa/toto", Method::GET, n[1]);
+  auto l = r.lookup("/lol/bras/jambe", Method::GET);
+  check_lookup_success(l, n[0], 1);
+  check_lookup_params(l, { { "bb", "lol"} });
+}
+
 TEST(malformed_route, empty)
 {
   Router<int> r;
