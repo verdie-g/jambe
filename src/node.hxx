@@ -125,13 +125,17 @@ std::unique_ptr<Node<T>>& Node<T>::create_wildcard(const std::string_view& part)
 template <typename T>
 bool Node<T>::lookup_wildcard(Route& route, Method method, Lookup<T>& l, const std::string_view& part) const
 {
+  LookupError save_err = l.error;
   if (wildcard_node_ != nullptr && wildcard_node_->lookup(route, method, l))
   {
     l.params.emplace_back(wildcard_node_->label_, part);
     return true;
   }
 
-  l.error = LookupError::NOT_FOUND;
+  if (save_err == LookupError::NONE)
+  {
+    l.error = LookupError::NOT_FOUND;
+  }
   return false;
 }
 
