@@ -7,7 +7,8 @@ OBJS = route.o
 BIN-OBJS = main.o
 BIN = jambe
 
-TEST-OBJS = unittest_jambe.o
+TEST-OBJS = unittest_jambe.o unittest_route.o
+
 TEST-BIN = check
 
 bin: CXXFLAGS += -O2

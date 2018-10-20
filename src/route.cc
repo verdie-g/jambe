@@ -4,45 +4,45 @@
 
 using namespace jambe;
 
-void Route::throw_if_malformed(const std::string& route)
-{
-  if (route.empty())
-  {
-    throw std::invalid_argument("route cannot be empty");
-  } 
-
-  if (route.front() != '/')
-  {
-    throw std::invalid_argument("route should start with a '/'");
-  }
-
-  for (size_t i = 1; i < route.length(); ++i)
-  {
-    if (route[i] == ':' && (route[i - 1] != '/' || i == route.length() - 1 || route[i + 1] == '/'))
-    {
-      throw std::invalid_argument("unexpected ':' character");
-    }
-  }
-}
-
 Route::Route(const std::string& route)
   : route_(route.data())
   , i_(0)
 {
-  if (route_.at(i_) == '/')
+  if (route.empty())
   {
-    ++i_;
+    throw MalformedRouteException();
   }
+
+  if (route.front() != '/')
+  {
+    throw MalformedRouteException();
+  }
+
+  ++i_;
 }
 
 std::string_view Route::next_part()
 {
-  std::size_t start = i_;
-  while (i_ < route_.length() && route_.at(i_) != '/')
+  if (is_end())
   {
-    i_++;
+    throw RouteEndException();
   }
+
+  std::size_t start = i_;
+  for (; i_ < route_.length() && route_[i_] != '/'; ++i_)
+  {
+    if (route_[i_] == ':' && (i_ == 0 || route_[i_ - 1] != '/' || i_ == route_.length() - 1 || route_[i_ + 1] == '/'))
+    {
+      throw MalformedRouteException();
+    }
+  }
+
   std::size_t count = i_ - start;
+  if (count == 0)
+  {
+    throw MalformedRouteException();
+  }
+
   i_ += static_cast<int>(!is_end());
   return route_.substr(start, count);
 }

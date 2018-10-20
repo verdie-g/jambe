@@ -12,7 +12,6 @@ Router<T>::Router()
 template <typename T>
 void Router<T>::add_route(const std::string& route, Method method, const T& data)
 {
-  Route::throw_if_malformed(route);
   Route r(route);
   root_.add_route(r, method, data);
 }
