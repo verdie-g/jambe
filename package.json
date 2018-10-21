@@ -1,0 +1,20 @@
+{
+  "name": "jambe",
+  "version": "0.0.1-alpha",
+  "description": "HTTP router written in C++ using N-API",
+  "main": "index.js",
+  "repository": "https://github.com/verdie-g/jambe",
+  "author": "Grégoire Verdier",
+  "license": "MIT",
+  "gypfile": true,
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "clean": "node-gyp clean"
+  },
+  "devDependencies": {
+    "node-gyp": "^3.8.0"
+  },
+  "dependencies": {
+    "node-addon-api": "^1.5.0"
+  }
+}

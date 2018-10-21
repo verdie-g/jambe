@@ -17,8 +17,6 @@ public:
 
   void add_route(const std::string& route, Method method, const T& data);
   Lookup<T> lookup(const std::string& route, Method method) const;
-  // void remove_route(const std::string& route, Method method);
-  // Lookup<T> lookup(const std::string& route, Method method) const;
 
 private:
   Node<T> root_;
