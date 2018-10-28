@@ -24,8 +24,12 @@ $(TEST-BIN): $(OBJS) $(TEST-OBJS)
 	$(CXX) -o $@ $^ $(LDLIBS)
 	./$@
 
+bench:
+	make -C bench/
+
 clean:
 	$(RM) $(OBJS) $(BIN-OBJS) $(BIN) $(TEST-OBJS) $(TEST-BIN)
+	make clean -C bench/
 
 $(BIN): $(OBJS) $(BIN-OBJS)
 	$(CXX) -o $@ $^ $(LDLIBS)
