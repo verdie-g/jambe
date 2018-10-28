@@ -35,17 +35,4 @@ struct Lookup
   LookupError error;
   T data;
   std::vector<Param> params;
-
-  const std::string& get_param(const std::string& name) const
-  {
-    for (const auto& param: params)
-    {
-      if (param.name == name)
-      {
-        return param.value;
-      }
-    }
-
-    throw std::runtime_error("Parameter not found");
-  }
 };

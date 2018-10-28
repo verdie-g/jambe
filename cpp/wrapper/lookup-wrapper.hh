@@ -17,6 +17,4 @@ private:
   static Napi::FunctionReference constructor;
 
   Lookup<Napi::Value> *lookup_;
-
-  Napi::Value get_param(const Napi::CallbackInfo& info);
 };
