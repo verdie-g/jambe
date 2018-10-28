@@ -94,5 +94,6 @@ Napi::Value RouterWrapper::lookup(const Napi::CallbackInfo& info)
   catch (const std::exception& ex)
   {
     Napi::Error::New(env, ex.what()).ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 }
