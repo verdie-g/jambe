@@ -7,12 +7,12 @@ namespace jambe
 
 enum class Method
 {
-  DELETE,
   GET,
-  HEAD,
-  PATCH,
   POST,
   PUT,
+  DELETE,
+  HEAD,
+  PATCH,
 };
 
 }
