@@ -3,7 +3,7 @@ CXXFLAGS = -Wall -Wextra -std=c++17 -pedantic
 
 VPATH = src/ tests/
 
-OBJS = route.o
+OBJS = route.o method.o
 BIN-OBJS = main.o
 BIN = jambe
 

@@ -8,6 +8,7 @@
       "cpp/wrapper/router-wrapper.cc",
       "cpp/wrapper/lookup-wrapper.cc",
       "cpp/wrapper/main.cc",
+      "cpp/jambe/src/method.cc",
       "cpp/jambe/src/route.cc"
     ],
     "include_dirs": [

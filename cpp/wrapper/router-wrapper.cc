@@ -41,9 +41,9 @@ void RouterWrapper::add_route(const Napi::CallbackInfo& info)
     Napi::TypeError::New(env, "String expected for argument 0").ThrowAsJavaScriptException();
   }
 
-  if (!info[1].IsNumber())
+  if (!info[1].IsString())
   {
-    Napi::TypeError::New(env, "Number expected for argument 1").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "String expected for argument 1").ThrowAsJavaScriptException();
   }
 
   if (!info[2].IsFunction())
@@ -52,7 +52,7 @@ void RouterWrapper::add_route(const Napi::CallbackInfo& info)
   }
 
   std::string route = info[0].As<Napi::String>().Utf8Value();
-  Method method = static_cast<Method>(info[1].As<Napi::Number>().Int32Value());
+  std::string method = info[1].As<Napi::String>().Utf8Value();
   try
   {
     router_->add_route(route, method, info[2]);
@@ -78,13 +78,13 @@ Napi::Value RouterWrapper::lookup(const Napi::CallbackInfo& info)
     Napi::TypeError::New(env, "String expected for argument 0").ThrowAsJavaScriptException();
   }
 
-  if (!info[1].IsNumber())
+  if (!info[1].IsString())
   {
-    Napi::TypeError::New(env, "Number expected for argument 1").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "String expected for argument 1").ThrowAsJavaScriptException();
   }
 
   std::string route = info[0].As<Napi::String>().Utf8Value();
-  Method method = static_cast<Method>(info[1].As<Napi::Number>().Int32Value());
+  std::string method = info[1].As<Napi::String>().Utf8Value();
   try
   {
     Lookup l = router_->lookup(route, method);

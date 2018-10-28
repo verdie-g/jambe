@@ -1,9 +1,11 @@
 #pragma once
 
-#define JAMBE_METHOD_NB 6
+#include <string>
 
 namespace jambe
 {
+
+const int JAMBE_METHOD_NB = 6;
 
 enum class Method
 {
