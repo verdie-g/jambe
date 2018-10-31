@@ -26,12 +26,7 @@ struct Param
 
 struct Lookup
 {
-  Lookup()
-    : error(LookupError::NONE)
-  {
-  }
-
-  LookupError error;
+  LookupError error = LookupError::NONE;
   const Napi::FunctionReference* handler = nullptr;
   std::vector<Param> params;
 };
