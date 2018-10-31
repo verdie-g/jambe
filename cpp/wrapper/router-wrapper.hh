@@ -16,8 +16,9 @@ public:
 private:
   static Napi::FunctionReference constructor;
 
-  Router<Napi::Value> *router_;
+  Router *router_;
 
   void add_route(const Napi::CallbackInfo& info);
+  void test(Napi::FunctionReference&& f);
   Napi::Value lookup(const Napi::CallbackInfo& info);
 };

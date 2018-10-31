@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdexcept>
+#include <napi.h>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -24,7 +24,6 @@ struct Param
   std::string value;
 };
 
-template <typename T>
 struct Lookup
 {
   Lookup()
@@ -33,6 +32,6 @@ struct Lookup
   }
 
   LookupError error;
-  T data;
+  const Napi::FunctionReference* handler = nullptr;
   std::vector<Param> params;
 };

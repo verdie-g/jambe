@@ -1,19 +1,20 @@
-namespace jambe
-{
+#include "node.hh"
 
-template <typename T>
-Node<T>::Node(const std::string_view& label)
+#include <stdexcept>
+
+using namespace jambe;
+
+Node::Node(const std::string_view& label)
   : label_(label)
   , wildcard_node_(nullptr)
 {
 }
 
-template <typename T>
-void Node<T>::add_route(Route& route, Method method, const T& data)
+void Node::add_route(Method method, Route& route, const Napi::Function& handler)
 {
   if (route.is_end())
   {
-    set_data(method, data);
+    set_handler(method, handler);
     return;
   }
 
@@ -21,7 +22,7 @@ void Node<T>::add_route(Route& route, Method method, const T& data)
 
   if (part.front() == ':')
   {
-    create_wildcard(part)->add_route(route, method, data);
+    create_wildcard(part)->add_route(method, route, handler);
     return;
   }
 
@@ -31,15 +32,14 @@ void Node<T>::add_route(Route& route, Method method, const T& data)
     child = children_.emplace(child, part);
   }
 
-  child->add_route(route, method, data);
+  child->add_route(method, route, handler);
 }
 
-template <typename T>
-bool Node<T>::lookup(Route& route, Method method, Lookup<T>& l) const
+bool Node::lookup(Method method, Route& route, Lookup& l) const
 {
   if (route.is_end())
   {
-    if (!get_data(method, l.data))
+    if (!get_handler(method, l.handler))
     {
       l.error = LookupError::METHOD_NOT_ALLOWED;
       return false;
@@ -53,41 +53,38 @@ bool Node<T>::lookup(Route& route, Method method, Lookup<T>& l) const
 
   if (child == children_.cend()
       || child->label_ != part
-      || !child->lookup(route, method, l))
+      || !child->lookup(method, route, l))
   {
-    return lookup_wildcard(route_save, method, l);
+    return lookup_wildcard(method, route_save, l);
   }
 
   return true;
 }
 
-template <typename T>
-void Node<T>::set_data(Method method, const T& data)
+void Node::set_handler(Method method, const Napi::Function& handler)
 {
   int i = static_cast<int>(method);
-  if (data_[i].has_value())
+  if (handlers_[i].has_value())
   {
-    throw AlreadyRegisteredException(); 
+    throw std::runtime_error("Already registered route");
   }
 
-  data_[i] = data;
+  handlers_[i] = Napi::Reference<Napi::Function>::New(handler);
 }
 
-template <typename T>
-bool Node<T>::get_data(Method method, T& data) const
+bool Node::get_handler(Method method, const Napi::FunctionReference*& handler) const
 {
   int i = static_cast<int>(method);
-  if (!data_[i].has_value())
+  if (!handlers_[i].has_value())
   {
     return false;
   }
 
-  data = data_[i].value();
+  handler = &handlers_[i].value();
   return true;
 }
 
-template <typename T>
-typename std::vector<Node<T>>::const_iterator Node<T>::cfind_child(const std::string_view& part) const
+typename std::vector<Node>::const_iterator Node::cfind_child(const std::string_view& part) const
 {
   auto child = children_.cbegin();
   for (; child != children_.cend() && child->label_ < part; child++)
@@ -96,8 +93,7 @@ typename std::vector<Node<T>>::const_iterator Node<T>::cfind_child(const std::st
   return child;
 }
 
-template <typename T>
-typename std::vector<Node<T>>::iterator Node<T>::find_child(const std::string_view& part)
+typename std::vector<Node>::iterator Node::find_child(const std::string_view& part)
 {
   auto child = children_.begin();
   for (; child != children_.end() && child->label_ < part; child++)
@@ -106,30 +102,28 @@ typename std::vector<Node<T>>::iterator Node<T>::find_child(const std::string_vi
   return child;
 }
 
-template <typename T>
-std::unique_ptr<Node<T>>& Node<T>::create_wildcard(const std::string_view& part)
+std::unique_ptr<Node>& Node::create_wildcard(const std::string_view& part)
 {
   std::string_view name = part.substr(1);
   if (wildcard_node_ != nullptr && wildcard_node_->label_ != name)
   {
-    throw WildcardConflictException();
+    throw std::runtime_error("Wildcard conflict");
   }
 
   if (wildcard_node_ == nullptr)
   {
-    wildcard_node_ = std::make_unique<Node<T>>(name);
+    wildcard_node_ = std::make_unique<Node>(name);
   }
 
   return wildcard_node_;
 }
 
-template <typename T>
-bool Node<T>::lookup_wildcard(Route& route, Method method, Lookup<T>& l) const
+bool Node::lookup_wildcard(Method method, Route& route, Lookup& l) const
 {
   std::string_view part = route.next_part();
   LookupError save_err = l.error;
 
-  if (wildcard_node_ != nullptr && wildcard_node_->lookup(route, method, l))
+  if (wildcard_node_ != nullptr && wildcard_node_->lookup(method, route, l))
   {
     l.params.emplace_back(wildcard_node_->label_, part);
     l.error = LookupError::NONE;
@@ -141,6 +135,4 @@ bool Node<T>::lookup_wildcard(Route& route, Method method, Lookup<T>& l) const
     l.error = LookupError::NOT_FOUND;
   }
   return false;
-}
-
 }

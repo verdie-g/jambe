@@ -23,7 +23,7 @@ RouterWrapper::RouterWrapper(const Napi::CallbackInfo& info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
-  router_ = new Router<Napi::Value>();
+  router_ = new Router();
 }
 
 void RouterWrapper::add_route(const Napi::CallbackInfo& info)
@@ -53,9 +53,10 @@ void RouterWrapper::add_route(const Napi::CallbackInfo& info)
 
   std::string route = info[0].As<Napi::String>().Utf8Value();
   std::string method = info[1].As<Napi::String>().Utf8Value();
+  auto handler = info[2].As<Napi::Function>();
   try
   {
-    router_->add_route(route, method, info[2]);
+    router_->add_route(route, method, handler);
   }
   catch (const std::exception& ex)
   {
@@ -66,7 +67,7 @@ void RouterWrapper::add_route(const Napi::CallbackInfo& info)
 Napi::Value RouterWrapper::lookup(const Napi::CallbackInfo& info)
 {
   Napi::Env env = info.Env();
-  Napi::HandleScope scope(env);
+  // Napi::HandleScope scope(env);
 
   if (info.Length() != 2)
   {
@@ -88,8 +89,20 @@ Napi::Value RouterWrapper::lookup(const Napi::CallbackInfo& info)
   try
   {
     Lookup l = router_->lookup(route, method);
-    // FIXME: return L
-    return Napi::Number::New(env, 5.0);
+  
+    Napi::Number error = Napi::Number::New(env, static_cast<int32_t>(l.error));
+    Napi::Value handler = l.error == LookupError::NONE ? l.handler->Value() : env.Undefined();
+    Napi::Object params = Napi::Object::New(env);
+    for (const auto& param: l.params)
+    {
+      params.Set(param.name, param.value);
+    }
+
+    Napi::Object obj = Napi::Object::New(env);
+    obj.Set("error", error);
+    obj.Set("handler", handler);
+    obj.Set("params", params);
+    return obj;
   }
   catch (const std::exception& ex)
   {

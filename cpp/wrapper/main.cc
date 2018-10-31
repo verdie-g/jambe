@@ -1,9 +1,8 @@
-#include <napi.h>
 #include "router-wrapper.hh"
-#include "lookup-wrapper.hh"
+
+#include <napi.h>
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-  LookupWrapper::Init(env, exports);
   return RouterWrapper::Init(env, exports);
 }
 

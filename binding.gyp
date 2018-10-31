@@ -5,10 +5,11 @@
     "cflags!": [ "-fno-exceptions" ],
     "cflags_cc!": [ "-fno-exceptions", "-std=gnu++1y" ],
     "sources": [
-      "cpp/wrapper/router-wrapper.cc",
-      "cpp/wrapper/lookup-wrapper.cc",
+      "cpp/jambe/src/node.cc",
+      "cpp/jambe/src/route.cc",
+      "cpp/jambe/src/router.cc",
       "cpp/wrapper/main.cc",
-      "cpp/jambe/src/route.cc"
+      "cpp/wrapper/router-wrapper.cc"
     ],
     "include_dirs": [
       "<!@(node -p \"require('node-addon-api').include\")",
