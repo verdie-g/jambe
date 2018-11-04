@@ -7,9 +7,9 @@
 
 enum class LookupError
 {
-  METHOD_NOT_ALLOWED,
-  NONE,
-  NOT_FOUND,
+  NONE = 0,
+  NOT_FOUND = 404,
+  METHOD_NOT_ALLOWED = 405,
 };
 
 struct Param
