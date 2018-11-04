@@ -15,6 +15,9 @@ public:
 
 private:
   static Napi::FunctionReference constructor;
+  static Napi::ObjectReference methods_str;
+  static void generate_method_strings(Napi::Env env);
+  static Method str_to_method(const Napi::String& s);
 
   Router *router_;
 

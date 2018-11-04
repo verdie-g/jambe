@@ -1,6 +1,26 @@
 #include "router-wrapper.hh"
 
 Napi::FunctionReference RouterWrapper::constructor;
+Napi::ObjectReference RouterWrapper::methods_str;
+
+void RouterWrapper::generate_method_strings(Napi::Env env)
+{
+  Napi::Object methods_str_obj = Napi::Object::New(env);
+  methods_str_obj.Set("GET", Napi::Number::New(env, static_cast<double>(Method::GET)));
+  methods_str_obj.Set("POST", Napi::Number::New(env, static_cast<double>(Method::POST)));
+  methods_str_obj.Set("PUT", Napi::Number::New(env, static_cast<double>(Method::PUT)));
+  methods_str_obj.Set("DELETE", Napi::Number::New(env, static_cast<double>(Method::DELETE)));
+  methods_str_obj.Set("HEAD", Napi::Number::New(env, static_cast<double>(Method::HEAD)));
+  methods_str_obj.Set("PATCH", Napi::Number::New(env, static_cast<double>(Method::PATCH)));
+  methods_str = Napi::Persistent(methods_str_obj);
+  methods_str.SuppressDestruct();
+};
+
+Method RouterWrapper::str_to_method(const Napi::String& s)
+{
+  Napi::Number n = methods_str.Value().Get(s).As<Napi::Number>();
+  return static_cast<Method>(n.Int32Value());
+}
 
 Napi::Object RouterWrapper::Init(Napi::Env env, Napi::Object exports)
 {
@@ -15,6 +35,9 @@ Napi::Object RouterWrapper::Init(Napi::Env env, Napi::Object exports)
   constructor.SuppressDestruct();
 
   exports.Set("Router", ctor);
+
+  generate_method_strings(env);
+
   return exports;
 }
 
@@ -51,12 +74,13 @@ void RouterWrapper::add_route(const Napi::CallbackInfo& info)
     Napi::TypeError::New(env, "Function expected for argument 2").ThrowAsJavaScriptException();
   }
 
-  std::string route = info[0].As<Napi::String>().Utf8Value();
-  std::string method = info[1].As<Napi::String>().Utf8Value();
+  Napi::String method_str = info[0].As<Napi::String>();
+  std::string route = info[1].As<Napi::String>().Utf8Value();
   auto handler = info[2].As<Napi::Function>();
   try
   {
-    router_->add_route(route, method, handler);
+    Method method = str_to_method(method_str);
+    router_->add_route(method, route, handler);
   }
   catch (const std::exception& ex)
   {
@@ -84,11 +108,12 @@ Napi::Value RouterWrapper::lookup(const Napi::CallbackInfo& info)
     Napi::TypeError::New(env, "String expected for argument 1").ThrowAsJavaScriptException();
   }
 
-  std::string route = info[0].As<Napi::String>().Utf8Value();
-  std::string method = info[1].As<Napi::String>().Utf8Value();
+  Napi::String method_str = info[0].As<Napi::String>();
+  std::string route = info[1].As<Napi::String>().Utf8Value();
   try
   {
-    Lookup l = router_->lookup(route, method);
+    Method method = str_to_method(method_str);
+    Lookup l = router_->lookup(method, route);
   
     Napi::Number error = Napi::Number::New(env, static_cast<int32_t>(l.error));
     Napi::Value handler = l.error == LookupError::NONE ? l.handler->Value() : env.Undefined();
