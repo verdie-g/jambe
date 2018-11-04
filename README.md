@@ -2,6 +2,9 @@
 
 Experimental url router for NodeJS writtin in C++ using N-API.
 
+Performance is not good because there is a huge overhead when calling native code from Javascript.
+A url router is not a good use case of N-API.
+
 ## Implementation
 
 Instead of using a Trie, the route is tokenize using slash
@@ -22,6 +25,4 @@ are working using backtracking.
 
 ## Usage
 
-- compile C++ test binary: make -C cpp/jambe bin-debug
-- launch tests:            make -C cpp/jambe check
-- compile addon:           yarn install && yarn build
+- compile addon: `yarn install && yarn build`
