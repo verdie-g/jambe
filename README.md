@@ -5,6 +5,16 @@ Experimental url router for NodeJS writtin in C++ using N-API.
 Performance is not good because there is a huge overhead when calling native code from Javascript.
 A url router is not a good use case of N-API.
 
+## API
+
+### Router
+
+```ts
+constructor()
+function add_route(method: string, route: string, handler: () => ()): void
+function lookup(method: string, route: string): Lookup
+```
+
 ## Implementation
 
 Instead of using a Trie, the route is tokenize using slash
